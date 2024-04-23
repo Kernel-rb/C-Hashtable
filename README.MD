@@ -1,6 +1,6 @@
-# Hashtable Learning Project
+# Hashtable 
 
-This project is a learning exercise for implementing a hashtable data structure in C.
+Based learning hashtable data structure in C.
 
 ## Source Files
 - `hash_table.h`: Header file containing the hashtable data structure and function prototypes.
