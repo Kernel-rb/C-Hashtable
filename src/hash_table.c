@@ -3,6 +3,9 @@
 #include "hash_table.h"
 
 
+static hash_table HT_DELETED_ITEM = {NULL , NULL};
+
+
 static hash_table_item hash_table_new_item(const char* k , const char* v){
     hash_table_item i = malloc(sizeof(hash_table_item));
     i->key = strdup(k); 
@@ -66,12 +69,48 @@ void insert_hash_table(hash_table* ht , const char* key , const char* value){
     int index = hash_table_get_hash(item->key , ht->size , 0);
     hash_table_item cur_item = ht->items[index];
     int i = 1;
-    while(cur_item != NULL){
+    while(cur_item != NULL && cur_item != &HT_DELETED_ITEM){
        index= hash_table_get_hash(item->key , ht->size , i);
        cur_item = ht->items[index];
         i++;
     }
     ht->items[index] = item;
     ht->count++;
+};
+
+void search_hash_table(hash_table* ht , const char* key){
+    int index = hash_table_get_hash(key , ht->size , 0);
+    hash_table_item item = ht->items[index];
+    int i = 1;
+    while(item != NULL){
+        if(item != &HT_DELETED_ITEM){
+            if(strcmp(item->key , key) == 0){
+                return item->value;
+            }
+        }
+        index = hash_table_get_hash(key , ht->size , i);
+        item = ht->items[index];
+        i++;
+    }
+    return NULL;
+};
+
+
+void delete_hash_table(hash_table* ht , const char* key){
+    int index = hash_table_get_hash(key , ht->size , 0);
+    hash_table_item item = ht->items[index];
+    int i = 1;
+    while(item !=NULL){
+        if(item != &HT_DELETED_ITEM){
+            if(strcmp(item->key , key) == 0){
+                del_hash_table_item(item);
+                ht->items[index] = &HT_DELETED_ITEM;
+            }
+        }
+        index = hash_table_get_hash(key , ht->size , i);
+        item = ht->items[index];
+        i++;
+    }
+    ht->count--;
 };
 
