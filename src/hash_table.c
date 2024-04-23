@@ -65,6 +65,10 @@ static int hash_table_get_hash(const char* s , const int num_buckets , const int
 
 
 void insert_hash_table(hash_table* ht , const char* key , const char* value){
+    const it load = ht->count * 100 / ht->size;
+    if(load > 70){
+        hash_table_resize_up(ht);
+    }
     hash_table_item item = hash_table_new_item(key , value);
     int index = hash_table_get_hash(item->key , ht->size , 0);
     hash_table_item cur_item = ht->items[index];
@@ -97,6 +101,10 @@ void search_hash_table(hash_table* ht , const char* key){
 
 
 void delete_hash_table(hash_table* ht , const char* key){
+    const int load = ht->count * 100 / ht->size;
+    if(load < 10){
+        hash_table_resize_down(ht);
+    }
     int index = hash_table_get_hash(key , ht->size , 0);
     hash_table_item item = ht->items[index];
     int i = 1;
@@ -113,4 +121,57 @@ void delete_hash_table(hash_table* ht , const char* key){
     }
     ht->count--;
 };
+
+
+static hash_table* hash_table_new_sized(const int base_size){
+    hash_table* ht = xmalloc(sizeof(hash_table));
+    ht->base_size = base_size;
+    ht->size = next_prime(ht->base_size);
+    ht->count = 0;
+    ht->items = xcalloc((size_t)ht->size , sizeof(hash_table_item*));
+    return ht;
+};
+
+
+hash_table* hash_table_new(){
+    return hash_table_new_sized(HT_INITIAL_BASE_SIZE);
+};
+
+
+static void hash_table_resize(hash_table* ht , const int base_size){
+    if(base_size < HT_INITIAL_BASE_SIZE){
+        return;
+    }
+    hash_table* new_ht = hash_table_new_sized(base_size);
+    for(int i = 0 ; i < ht->size ; i++){
+        hash_table_item item = ht->items[i];
+        if(item != NULL && item != &HT_DELETED_ITEM){
+            insert_hash_table(new_ht , item->key , item->value);
+        }
+    }
+    ht->base_size = new_ht->base_size;
+    ht->count = new_ht->count;
+
+    const int tmp_size = ht->size;
+    ht->size = new_ht->size;
+    new_ht->size = tmp_size;
+
+    hash_table_item* tmp_items = ht->items;
+    ht->items = new_ht->items;
+    new_ht->items = tmp_items;
+
+    del_hash_table(new_ht);
+};
+
+
+static void hash_table_resize_up(hash_table* ht){
+    const int new_size = ht->base_size * 2;
+    hash_table_resize(ht , new_size);
+};
+
+static void hash_table_resize_down(hash_table* ht){
+    const int new_size = ht->base_size / 2;
+    hash_table_resize(ht , new_size);
+};
+
 
