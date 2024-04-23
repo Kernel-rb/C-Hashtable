@@ -16,7 +16,7 @@ The `build` directory contains the compiled executable `main.exe`.
 
 To compile and run the program, execute the `run.sh` script: 
 ```bash
-    ./run.sh
+./run.sh
 ```
 
     
