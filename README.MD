@@ -24,7 +24,5 @@ This will compile the source files and run the resulting executable.
 
 ## TODO
 
-- [ ] Add error handling to input validation.
-- [ ] Implement resizing of the hashtable to improve performance.
 - [ ] Write unit tests to validate hashtable functionality.
 - [ ] Add support for more data types in the hashtable.
