@@ -7,7 +7,7 @@ typedef struct {
 } ht_item;
 
 typedef struct {
-    int base_size; // Add base_size member
+    int base_size; 
     int size;
     int count;
     ht_item** items;
@@ -18,4 +18,4 @@ char* ht_search(ht_hash_table* ht, const char* key);
 void ht_delete(ht_hash_table* ht, const char* key);
 ht_hash_table* ht_new();
 
-#endif /* HASH_TABLE_H */
+#endif 
